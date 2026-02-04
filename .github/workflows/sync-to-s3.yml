@@ -28,7 +28,7 @@ jobs:
 
       - name: Sync repository to S3
         run: |
-          aws s3 sync . s3://github-code-parser/repos/${{ github.repository }} \
+          aws s3 sync . s3://github-code-parser/${{ github.repository }} \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
