@@ -10,4 +10,4 @@ The ["Gilded Rose Requirements"](https://github.com/kblincoe/GildedRose-Refactor
 
 The simplest way is to just clone the code and start hacking away to improve the code. The idea is not to re-write the code from scratch, but rather to practice taking small refactoring steps, running the tests often, and incrementally improving the code.
 
-test after secruity changes
+test knowledge base sync
