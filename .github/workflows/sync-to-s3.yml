@@ -17,7 +17,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        # Remove fetch-depth: 1 or keep it, but ensure full checkout
       
       - name: List files (debugging)
         run: |
@@ -36,11 +35,11 @@ jobs:
       - name: Verify AWS credentials
         run: |
           aws sts get-caller-identity
-          aws s3 ls s3://github-code-parser/ || echo "Bucket is empty or inaccessible"
+          aws s3 ls s3://security-dashboard-project-agent-codebase/ || echo "Bucket is empty or inaccessible"
       
-      - name: Sync repository to S3
+      - name: Sync repository to S3 (dry run)
         run: |
-          aws s3 sync . s3://github-code-parser/${{ github.repository }} \
+          aws s3 sync . s3://security-dashboard-project-agent-codebase/${{ github.repository }} \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
@@ -70,9 +69,9 @@ jobs:
             --exclude "**/*.mov" \
             --dryrun
       
-      - name: Actual sync (remove dryrun)
+      - name: Actual sync
         run: |
-          aws s3 sync . s3://github-code-parser/${{ github.repository }} \
+          aws s3 sync . s3://security-dashboard-project-agent-codebase/${{ github.repository }} \
             --delete \
             --exclude ".git/*" \
             --exclude ".github/*" \
