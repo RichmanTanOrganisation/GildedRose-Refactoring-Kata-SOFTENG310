@@ -9,24 +9,68 @@ on:
 jobs:
   sync-to-s3:
     runs-on: ubuntu-latest
-
+    
     permissions:
       id-token: write
       contents: read
-
+    
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-
+        # Remove fetch-depth: 1 or keep it, but ensure full checkout
+      
+      - name: List files (debugging)
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in current directory:"
+          ls -la
+          echo "Total files to sync:"
+          find . -type f | wc -l
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::174957579910:role/security-dashboard-github-actions-s3-sync
           aws-region: ap-southeast-2
-
+      
+      - name: Verify AWS credentials
+        run: |
+          aws sts get-caller-identity
+          aws s3 ls s3://github-code-parser/ || echo "Bucket is empty or inaccessible"
+      
       - name: Sync repository to S3
+        run: |
+          aws s3 sync . s3://github-code-parser/${{ github.repository }} \
+            --delete \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude "**/.gitignore" \
+            --exclude "**/.DS_Store" \
+            --exclude "**/node_modules/*" \
+            --exclude "**/dist/*" \
+            --exclude "**/build/*" \
+            --exclude "**/bin/*" \
+            --exclude "**/obj/*" \
+            --exclude "**/.next/*" \
+            --exclude "**/.cache/*" \
+            --exclude "**/coverage/*" \
+            --exclude "**/*.exe" \
+            --exclude "**/*.dll" \
+            --exclude "**/*.so" \
+            --exclude "**/*.dylib" \
+            --exclude "**/*.zip" \
+            --exclude "**/*.tar" \
+            --exclude "**/*.tar.gz" \
+            --exclude "**/*.7z" \
+            --exclude "**/*.png" \
+            --exclude "**/*.jpg" \
+            --exclude "**/*.jpeg" \
+            --exclude "**/*.gif" \
+            --exclude "**/*.mp4" \
+            --exclude "**/*.mov" \
+            --dryrun
+      
+      - name: Actual sync (remove dryrun)
         run: |
           aws s3 sync . s3://github-code-parser/${{ github.repository }} \
             --delete \
