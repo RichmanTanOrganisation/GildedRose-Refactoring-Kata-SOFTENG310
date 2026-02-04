@@ -54,7 +54,7 @@ class GildedRose {
         }
     }
 
-    public void HandofRagnaros(i){
+    public void HandofRagnaros(int i){
         if (!items[i].name.equals("Sulfuras, Hand of Ragnaros")) {
                         items[i].quality = items[i].quality - 1;
         }
